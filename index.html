@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russedåp Innsjekking</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Russedåp Innsjekking</h2>
+        
+        <!-- Navigasjonsknapper -->
+        <div class="mb-3">
+            <button class="btn btn-primary" onclick="window.location.href='insjekket.html'">Vis Innsjekkede</button>
+            <button class="btn btn-warning" onclick="window.location.href='ikkeInsjekket.html'">Vis Ikke Innsjekkede</button>
+            <button class="btn btn-success" onclick="window.print()">Skriv ut som PDF</button>
+        </div>
+
+        <!-- Tabell for å vise elever -->
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="studentTable">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtx8J7NBELBdhWrPgiFyWrOtiMSYerJbo",
+            authDomain: "test-b24b1.firebaseapp.com",
+            databaseURL: "https://test-b24b1-default-rtdb.firebaseio.com", // URL for Realtime Database
+            projectId: "test-b24b1",
+            storageBucket: "test-b24b1.appspot.com",
+            messagingSenderId: "1058078158269",
+            appId: "1:1058078158269:web:10ac5b50c413295e3636d4",
+            measurementId: "G-1CWRF1Z6BQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(); // Referanse til Realtime Database
+
+        function loadStudents() {
+            const studentsRef = database.ref(); // Start fra rot eller en spesifikk node du er interessert i
+            
+            studentsRef.once("value")
+                .then(snapshot => {
+                    let students = [];
+                    snapshot.forEach(childSnapshot => {
+                        let key = childSnapshot.key; // Hent nøkkelen (som representerer hver student)
+                        let data = childSnapshot.val();
+                        
+                        // Hent fullt navn og status
+                        let fullName = `${data.Fornavn} ${data.Etternavn}`;
+                        let statusText = data.Status ? "✅ Innsjekket" : "❌ Ikke innsjekket";
+                        
+                        // Legg til elev i listen
+                        students.push({ name: fullName, statusText: statusText });
+                    });
+
+                    // Sorter elever alfabetisk etter navn
+                    students.sort((a, b) => a.name.localeCompare(b.name));
+
+                    // Fyll tabellen med sorterte elever
+                    let tableBody = document.getElementById("studentTable");
+                    tableBody.innerHTML = "";
+                    students.forEach(student => {
+                        tableBody.innerHTML += `<tr><td>${student.name}</td><td>${student.statusText}</td></tr>`;
+                    });
+                })
+                .catch(error => {
+                    console.error("Feil ved henting: ", error);
+                });
+        }
+
+        window.onload = loadStudents;
+    </script>
+</body>
+</html>
