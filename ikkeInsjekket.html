@@ -13,7 +13,11 @@
         <h2>Ikke Innsjekkede Elever</h2>
 
         <!-- Navigasjonsknapp for å vise alle elever -->
-        <button class="btn btn-primary mb-3" onclick="window.location.href='index.html'">Vis alle elever</button>
+        <div class="mb-3">
+            <button class="btn btn-primary" onclick="window.location.href='insjekket.html'">Vis Innsjekkede</button>
+            <button class="btn btn-warning" onclick="window.location.href='index.html'">Vis Alle Elever</button>
+            <button class="btn btn-success" onclick="window.print()">Skriv ut som PDF</button>
+        </div>
 
         <!-- Tabell for å vise ikke sjekket inn-elever -->
         <table class="table table-striped mt-3">
